@@ -362,8 +362,9 @@ export function extractTrackedChanges(state: EditorState | null): TrackedChanges
       }
     }
     if (commentType) {
-      const commentMark = node.marks.find((m) => m.type === commentType);
-      if (commentMark) {
+      // Every comment on the text, since comments can overlap
+      for (const commentMark of node.marks) {
+        if (commentMark.type !== commentType) continue;
         const cid = commentMark.attrs.commentId as number;
         let meta = commentMetadata.get(cid);
         if (!meta) {

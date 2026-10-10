@@ -193,16 +193,17 @@ function runBoundaryFromConvertedRun(
 
 /**
  * Apply comment marks to PM nodes within a comment range.
- * Only the first active comment ID is used (comments don't overlap visually).
+ * Every active comment ID gets its own mark, so overlapping comments each keep their text.
  */
 function applyCommentMarks(nodes: PMNode[], commentIds: Set<number>): PMNode[] {
   if (commentIds.size === 0) return nodes;
-  const commentId = [...commentIds][0]; // Use first active comment
-  const commentMark = schema.marks.comment.create({ commentId });
+  const commentMarks = [...commentIds].map((commentId) =>
+    schema.marks.comment.create({ commentId })
+  );
 
   return nodes.map((node) => {
     if (node.isText) {
-      return node.mark(commentMark.addToSet(node.marks));
+      return node.mark(commentMarks.reduce((marks, mark) => mark.addToSet(marks), node.marks));
     }
     return node;
   });

@@ -16,6 +16,8 @@ export const CommentExtension = createMarkExtension({
       commentId: { default: 0 },
     },
     inclusive: false,
+    // Comments overlap, as in Word: a second comment on the same text keeps the first
+    excludes: '',
     parseDOM: [
       {
         tag: 'span.docx-comment',
