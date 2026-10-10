@@ -10,9 +10,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
 
 # Least-privilege default GITHUB_TOKEN: lint/test/build only read the repo.
 permissions:

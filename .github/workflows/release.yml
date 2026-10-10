@@ -1,7 +1,7 @@
 name: Release
 
 # Two triggers, single job:
-# 1. Every push to main (1.x) or 0.x (maintenance) → if there are pending
+# 1. Every push to master (1.x) or 0.x (maintenance) → if there are pending
 #    changesets in `.changeset/`, open or update a "chore: release" PR with the
 #    version bumps and CHANGELOG entries applied. The PR sits there until a
 #    maintainer merges it.
@@ -14,7 +14,7 @@ name: Release
 # steps are skipped: `changeset version` just rewrites versions + CHANGELOGs,
 # needs no build, and the work is already validated by each contributing PR's
 # own CI. Skipping keeps PR-update runs to ~1 min so they finish before the
-# next push to main supersedes them in the `release` concurrency group —
+# next push to master supersedes them in the `release` concurrency group —
 # otherwise slow runs queue and get cancelled, leaving the release PR stale.
 #
 # Each branch maintains its own `.changeset/*.md` queue. 0.x and 1.x publish
@@ -25,7 +25,7 @@ name: Release
 # without a fresh push (e.g. recovering from a failed publish step).
 on:
   push:
-    branches: [main, 0.x]
+    branches: [master, 0.x]
   workflow_dispatch:
 
 concurrency:
@@ -79,7 +79,7 @@ jobs:
       # repo's pre-commit hook (typecheck + parity + api:check + lint-staged).
       # That hook is for local dev — it must NOT gate the bot's automated
       # `chore: release` commit, where it both fails (api:check needs a build
-      # this path skips, and breaks on any pre-existing snapshot drift on main)
+      # this path skips, and breaks on any pre-existing snapshot drift on master)
       # and is redundant: ci.yml already runs these on contributor PRs, and the
       # publish path runs them as real steps below. Neuter hooks for the job.
       - name: Disable git hooks for automated commits
@@ -181,7 +181,7 @@ jobs:
       # makes this idempotent: a re-run after publish flips published=false and
       # this step skips.
       - name: Create umbrella version tag (vX.Y.Z)
-        if: ${{ steps.changesets.outputs.published == 'true' && github.ref == 'refs/heads/main' }}
+        if: ${{ steps.changesets.outputs.published == 'true' && github.ref == 'refs/heads/master' }}
         env:
           PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
         run: |
@@ -198,7 +198,7 @@ jobs:
       # misleading "publish failed / partial state" alert keyed on
       # no-pending-changesets.
       - name: Mint release-pal App token
-        if: ${{ steps.changesets.outputs.published == 'true' && github.ref == 'refs/heads/main' }}
+        if: ${{ steps.changesets.outputs.published == 'true' && github.ref == 'refs/heads/master' }}
         id: pal-token
         continue-on-error: true
         uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
@@ -213,7 +213,7 @@ jobs:
       # the previous umbrella tag bounds "what shipped", and chore: release
       # commits are skipped so the release PR doesn't comment on itself.
       - name: Comment release link on shipped PRs
-        if: ${{ steps.changesets.outputs.published == 'true' && github.ref == 'refs/heads/main' }}
+        if: ${{ steps.changesets.outputs.published == 'true' && github.ref == 'refs/heads/master' }}
         continue-on-error: true
         env:
           GH_TOKEN: ${{ steps.pal-token.outputs.token }}
@@ -243,7 +243,7 @@ jobs:
       # Tell the landing site a new version shipped. Its sync workflow opens an
       # auto-merging PR that bumps the pinned editor deps to this version.
       - name: Notify landing site of new release
-        if: ${{ steps.changesets.outputs.published == 'true' && github.ref == 'refs/heads/main' }}
+        if: ${{ steps.changesets.outputs.published == 'true' && github.ref == 'refs/heads/master' }}
         continue-on-error: true
         env:
           GH_TOKEN: ${{ steps.pal-token.outputs.token }}

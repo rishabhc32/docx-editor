@@ -2,7 +2,7 @@ name: CLA
 
 # All logic lives in .github/cla/cla.sh and is unit-tested by
 # .github/cla/cla.test.sh (run by ci.yml). This workflow is a thin orchestrator
-# that sets the env, checks out main so the script can read/write the
+# that sets the env, checks out master so the script can read/write the
 # signatures file, and invokes the script.
 
 on:
@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: false
 
 # All write actions go through the eigenpal-release-pal App's installation
-# token, which is in the main-branch ruleset's bypass list. The workflow's
+# token, which is in the master-branch ruleset's bypass list. The workflow's
 # own GITHUB_TOKEN is never used for writes — keep it read-only.
 permissions:
   contents: read
@@ -41,7 +41,7 @@ jobs:
     steps:
       # Mints an installation token for the eigenpal-release-pal App. That App
       # has contents:write + pull-requests:write + statuses:write on this repo
-      # and is on the main-branch ruleset bypass list, so the bot's push to main
+      # and is on the master-branch ruleset bypass list, so the bot's push to master
       # to record signatures is allowed.
       - name: Mint App installation token
         id: app-token
@@ -50,10 +50,10 @@ jobs:
           app-id: ${{ secrets.RELEASE_PAL_APP_ID }}
           private-key: ${{ secrets.RELEASE_PAL_PRIVATE_KEY }}
 
-      - name: Checkout main
+      - name: Checkout master
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
-          ref: main
+          ref: master
           token: ${{ steps.app-token.outputs.token }}
 
       - name: Process CLA
@@ -75,6 +75,6 @@ jobs:
           # to sign once (then they're recorded like anyone else). To turn the
           # org check off entirely, leave CLA_ORG empty.
           CLA_ORG: 'eigenpal'
-          CLA_URL: ${{ github.server_url }}/${{ github.repository }}/blob/main/CLA.md
+          CLA_URL: ${{ github.server_url }}/${{ github.repository }}/blob/master/CLA.md
           SIGN_PHRASE: 'I have read the CLA Document and I hereby sign the CLA'
         run: bash .github/cla/cla.sh

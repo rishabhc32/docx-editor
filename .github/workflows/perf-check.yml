@@ -2,7 +2,7 @@ name: Performance Check
 
 # On-demand large-document performance probe. Add the `perf-check` label to a PR
 # to run the comments+suggestions perf suite against the PR's code and post a
-# comparison against the baseline committed on main. Informational only — it
+# comparison against the baseline committed on master. Informational only — it
 # never fails the check.
 #
 # SECURITY: this uses the `pull_request` trigger, not `issue_comment`, on purpose.

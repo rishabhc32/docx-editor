@@ -112,9 +112,9 @@ cla_main() {
       git add "$signatures"
       git commit -m "Record CLA signature for @${COMMENT_USER_LOGIN} (PR #${PR_NUMBER})"
       # Push uses the App installation token set by the workflow (see cla.yml).
-      # The App must be on the main-branch ruleset's bypass list for this to
+      # The App must be on the master-branch ruleset's bypass list for this to
       # succeed under any required-status-checks rule.
-      git push origin main
+      git push origin master
     fi
   fi
 

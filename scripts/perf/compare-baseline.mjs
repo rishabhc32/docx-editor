@@ -133,7 +133,7 @@ for (const metric of current.metrics) {
 lines.push('');
 if (!baseline) {
   lines.push(
-    '🆕 No committed baseline was found, so deltas are blank. Refresh it via the workflow’s manual “Run workflow” dispatch on `main`.'
+    '🆕 No committed baseline was found, so deltas are blank. Refresh it via the workflow’s manual “Run workflow” dispatch on `master`.'
   );
 } else if (regressions > 0) {
   lines.push(
